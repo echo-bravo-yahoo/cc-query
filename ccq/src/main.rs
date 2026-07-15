@@ -20,6 +20,13 @@ struct Cli {
     /// Use directory directly as JSONL data source
     #[arg(short, long = "data-dir")]
     data_dir: Option<PathBuf>,
+
+    /// Disable the default `DuckDB` sandbox (`allowed_directories` scoped to
+    /// the directory being queried, no network/extension access, locked
+    /// config). Off by default; pass --unsafe for COPY TO/httpfs/broader
+    /// file access.
+    #[arg(long = "unsafe")]
+    unsafe_: bool,
 }
 
 fn main() -> ExitCode {
@@ -38,6 +45,7 @@ fn run() -> ccq::Result<()> {
         cli.project_path.as_deref(),
         cli.session.as_deref(),
         cli.data_dir.as_deref(),
+        !cli.unsafe_,
     )?;
 
     if std::io::stdin().is_terminal() {

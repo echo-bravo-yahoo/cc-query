@@ -43,6 +43,7 @@ pub struct SessionInfo {
     agent_count: usize,
     project_count: usize,
     file_pattern: FilePattern,
+    base_dir: PathBuf,
 }
 
 impl SessionInfo {
@@ -64,6 +65,12 @@ impl SessionInfo {
     /// File pattern for `DuckDB` to read.
     pub const fn file_pattern(&self) -> &FilePattern {
         &self.file_pattern
+    }
+
+    /// Directory the file pattern is rooted under - what the `DuckDB`
+    /// sandbox restricts `allowed_directories` to by default.
+    pub fn base_dir(&self) -> &Path {
+        &self.base_dir
     }
 }
 
@@ -171,6 +178,7 @@ fn get_session_files_data_dir(dir: &Path, session_filter: Option<&str>) -> Resul
                 agent_count: 0,
                 project_count: 0,
                 file_pattern: FilePattern::Single(String::new()),
+                base_dir: dir.to_path_buf(),
             });
         }
 
@@ -180,6 +188,7 @@ fn get_session_files_data_dir(dir: &Path, session_filter: Option<&str>) -> Resul
             agent_count: 0,
             project_count: 1,
             file_pattern: FilePattern::Single(dir.join("**/*.jsonl").to_string_lossy().into()),
+            base_dir: dir.to_path_buf(),
         });
     }
 
@@ -202,6 +211,7 @@ fn get_session_files_data_dir(dir: &Path, session_filter: Option<&str>) -> Resul
         agent_count: agents,
         project_count: 1,
         file_pattern,
+        base_dir: dir.to_path_buf(),
     })
 }
 
@@ -222,6 +232,7 @@ fn get_session_files_all_projects(session_filter: Option<&str>) -> Result<Sessio
             agent_count: 0,
             project_count: 0,
             file_pattern: FilePattern::Single(String::new()),
+            base_dir: base,
         });
     }
 
@@ -249,6 +260,7 @@ fn get_session_files_all_projects(session_filter: Option<&str>) -> Result<Sessio
         agent_count: total_agents,
         project_count: project_dirs.len(),
         file_pattern,
+        base_dir: base,
     })
 }
 
@@ -261,6 +273,7 @@ fn get_session_files_project(claude_dir: &Path, session_filter: Option<&str>) ->
             agent_count: 0,
             project_count: 1,
             file_pattern: FilePattern::Single(String::new()),
+            base_dir: claude_dir.to_path_buf(),
         });
     }
 
@@ -272,6 +285,7 @@ fn get_session_files_project(claude_dir: &Path, session_filter: Option<&str>) ->
             agent_count: 0,
             project_count: 1,
             file_pattern: FilePattern::Single(String::new()),
+            base_dir: claude_dir.to_path_buf(),
         });
     }
 
@@ -298,6 +312,7 @@ fn get_session_files_project(claude_dir: &Path, session_filter: Option<&str>) ->
         agent_count: agents,
         project_count: 1,
         file_pattern,
+        base_dir: claude_dir.to_path_buf(),
     })
 }
 

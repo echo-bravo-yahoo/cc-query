@@ -152,3 +152,13 @@ run_query_test "multiple-queries" "SELECT count(*) FROM messages; SELECT count(*
 echo ""
 echo "Error Handling:"
 run_command_test "error-no-sessions" "$CC_QUERY" -d "/nonexistent/path/that/does/not/exist"
+
+# =============================================================================
+# Sandbox (default DuckDB lockdown, --unsafe escape)
+# =============================================================================
+echo ""
+echo "Sandbox:"
+rm -f /tmp/ccq-e2e-sandbox-blocked.csv /tmp/ccq-e2e-sandbox-unsafe.csv
+run_command_test "sandbox-copy-blocked" bash -c "echo \"COPY (SELECT 1) TO '/tmp/ccq-e2e-sandbox-blocked.csv';\" | \"$CC_QUERY\" -d \"$FIXTURES_DIR\""
+run_command_test "sandbox-unsafe-copy-allowed" bash -c "echo \"COPY (SELECT 1) TO '/tmp/ccq-e2e-sandbox-unsafe.csv';\" | \"$CC_QUERY\" --unsafe -d \"$FIXTURES_DIR\""
+rm -f /tmp/ccq-e2e-sandbox-blocked.csv /tmp/ccq-e2e-sandbox-unsafe.csv

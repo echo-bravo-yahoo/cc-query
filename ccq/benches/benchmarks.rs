@@ -14,7 +14,7 @@ fn startup_simple(c: &mut Criterion) {
     let path = Path::new(SIMPLE_FIXTURE);
     c.bench_function("startup_simple", |b| {
         b.iter(|| {
-            QuerySession::create(None, None, Some(black_box(path))).unwrap();
+            QuerySession::create(None, None, Some(black_box(path)), true).unwrap();
         });
     });
 }
@@ -23,14 +23,14 @@ fn startup_complex(c: &mut Criterion) {
     let path = Path::new(COMPLEX_FIXTURE);
     c.bench_function("startup_complex", |b| {
         b.iter(|| {
-            QuerySession::create(None, None, Some(black_box(path))).unwrap();
+            QuerySession::create(None, None, Some(black_box(path)), true).unwrap();
         });
     });
 }
 
 fn query_count(c: &mut Criterion) {
     let path = Path::new(SIMPLE_FIXTURE);
-    let session = QuerySession::create(None, None, Some(path)).unwrap();
+    let session = QuerySession::create(None, None, Some(path), true).unwrap();
 
     c.bench_function("query_count", |b| {
         b.iter(|| {
@@ -43,7 +43,7 @@ fn query_count(c: &mut Criterion) {
 
 fn query_group_by(c: &mut Criterion) {
     let path = Path::new(SIMPLE_FIXTURE);
-    let session = QuerySession::create(None, None, Some(path)).unwrap();
+    let session = QuerySession::create(None, None, Some(path), true).unwrap();
 
     c.bench_function("query_group_by", |b| {
         b.iter(|| {
@@ -58,7 +58,7 @@ fn query_group_by(c: &mut Criterion) {
 
 fn query_json_extract(c: &mut Criterion) {
     let path = Path::new(SIMPLE_FIXTURE);
-    let session = QuerySession::create(None, None, Some(path)).unwrap();
+    let session = QuerySession::create(None, None, Some(path), true).unwrap();
 
     c.bench_function("query_json_extract", |b| {
         b.iter(|| {

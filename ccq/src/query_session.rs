@@ -57,6 +57,7 @@ impl QuerySession {
         project_dir: Option<&Path>,
         session_filter: Option<&str>,
         data_dir: Option<&Path>,
+        sandbox: bool,
     ) -> Result<Self> {
         let info = session_loader::get_session_files(project_dir, session_filter, data_dir)?;
 
@@ -70,8 +71,20 @@ impl QuerySession {
         }
 
         let conn = Connection::open_in_memory()?;
+
+        if sandbox {
+            conn.execute_batch(&format!(
+                "SET allowed_directories=['{}'];\nSET enable_external_access=false;",
+                info.base_dir().display()
+            ))?;
+        }
+
         let sql = Self::build_create_views_sql(info.file_pattern());
         conn.execute_batch(&sql)?;
+
+        if sandbox {
+            conn.execute_batch("SET lock_configuration=true;")?;
+        }
 
         Ok(Self { conn, info })
     }
